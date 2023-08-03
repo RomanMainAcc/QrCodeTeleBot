@@ -8,6 +8,14 @@ bot = telebot.TeleBot('6046831990:AAGMjVSRxnL_WX9IdfVcMLgjyoUcIjmSBYg')
 qr_code_filename = 'qr_code.png'
 
 
+def download_file(file_id: str) -> None:
+    qr_code_info = bot.get_file(file_id)
+    qr_code_file = bot.download_file(qr_code_info.file_path)
+
+    with open(qr_code_filename, 'wb') as file:
+        file.write(qr_code_file)
+
+
 @bot.message_handler(commands=['start', 'help'])
 def starter(message):
     bot.send_message(message.chat.id, "Hello, send me the text and I will generate a qr code")
@@ -24,12 +32,8 @@ def text_to_qr(message):
 
 @bot.message_handler(content_types=['photo'])
 def qr_to_text(message):
-    photo = message.photo[-1].file_id
-    qr_code_info = bot.get_file(photo)
-    qr_code_file = bot.download_file(qr_code_info.file_path)
-
-    with open(qr_code_filename, 'wb') as file:
-        file.write(qr_code_file)
+    photo_id = message.photo[-1].file_id
+    download_file(photo_id)
 
     decoded_objects = decode(Image.open(qr_code_filename))
 
