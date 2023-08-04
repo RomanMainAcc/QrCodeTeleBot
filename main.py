@@ -1,24 +1,18 @@
 import telebot
 import pyqrcode
-import config
-import requests
+import os
 from PIL import Image
 from pyzbar.pyzbar import decode
 from io import BytesIO
 
-bot = telebot.TeleBot(config.TOKEN)
+bot = telebot.TeleBot(os.environ['TOKEN'])
 
 
-def download_file_to_pillow(file_id: str) -> Image.Image:
-    qr_code_info = bot.get_file(file_id)
-    qr_code_url = f"https://api.telegram.org/file/bot{config.TOKEN}/{qr_code_info.file_path}"
+def get_file_binary(file_id: str) -> bytes:
+    file_info = bot.get_file(file_id)
+    file_binary = bot.download_file(file_info.file_path)
 
-    response = requests.get(qr_code_url)
-    response.raise_for_status()
-
-    buffer = BytesIO(response.content)
-
-    return Image.open(buffer)
+    return file_binary
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -38,9 +32,11 @@ def text_to_qr(message: telebot.types.Message) -> None:
 @bot.message_handler(content_types=['photo'])
 def qr_to_text(message: telebot.types.Message) -> None:
     photo_id = message.photo[-1].file_id
-    qr_code_img = download_file_to_pillow(photo_id)
+    qr_code_binary = get_file_binary(photo_id)
 
-    decoded_objects = decode(qr_code_img)
+    photo = Image.open(BytesIO(qr_code_binary))
+
+    decoded_objects = decode(photo)
 
     if decoded_objects:
         qr_text = decoded_objects[0].data.decode('utf-8')
