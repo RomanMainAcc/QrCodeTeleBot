@@ -1,3 +1,4 @@
 .idea
 venv
 qr_code.png
+config.py
