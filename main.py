@@ -34,9 +34,9 @@ def qr_to_text(message: telebot.types.Message) -> None:
     photo_id = message.photo[-1].file_id
     qr_code_binary = get_file_binary(photo_id)
 
-    photo = Image.open(BytesIO(qr_code_binary))
+    qr_code_img = Image.open(BytesIO(qr_code_binary))
 
-    decoded_objects = decode(photo)
+    decoded_objects = decode(qr_code_img)
 
     if decoded_objects:
         qr_text = decoded_objects[0].data.decode('utf-8')
