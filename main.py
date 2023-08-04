@@ -1,9 +1,9 @@
 import telebot
 import pyqrcode
 import config
+import requests
 from PIL import Image
 from pyzbar.pyzbar import decode
-import requests
 from io import BytesIO
 
 bot = telebot.TeleBot(config.TOKEN)
