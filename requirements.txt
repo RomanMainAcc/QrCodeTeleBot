@@ -1,4 +1,3 @@
-Pillow
-PyQRCode
-pyTelegramBotAPI
-pyzbar
+Pillow==10.0.0
+PyQRCode==1.2.1
+pyTelegramBotAPI==4.12.0
