@@ -1,8 +1,9 @@
 import telebot
 import pyqrcode
 import os
+import png
 from PIL import Image
-# from pyzbar.pyzbar import decode
+from pyzbar.pyzbar import decode
 from io import BytesIO
 
 bot = telebot.TeleBot(os.environ['TOKEN'])
@@ -29,20 +30,20 @@ def text_to_qr(message: telebot.types.Message) -> None:
     bot.send_photo(message.chat.id, photo=buffer)
 
 
-# @bot.message_handler(content_types=['photo'])
-# def qr_to_text(message: telebot.types.Message) -> None:
-#     photo_id = message.photo[-1].file_id
-#     qr_code_binary = get_file_binary(photo_id)
-#
-#     qr_code_img = Image.open(BytesIO(qr_code_binary))
-#
-#     decoded_objects = decode(qr_code_img)
-#
-#     if decoded_objects:
-#         qr_text = decoded_objects[0].data.decode('utf-8')
-#         bot.reply_to(message, f'Text encoded in a QR code: {qr_text}')
-#     else:
-#         bot.reply_to(message, "QR code was not recognized or image not found.")
+@bot.message_handler(content_types=['photo'])
+def qr_to_text(message: telebot.types.Message) -> None:
+    photo_id = message.photo[-1].file_id
+    qr_code_binary = get_file_binary(photo_id)
+
+    qr_code_img = Image.open(BytesIO(qr_code_binary))
+
+    decoded_objects = decode(qr_code_img)
+
+    if decoded_objects:
+        qr_text = decoded_objects[0].data.decode('utf-8')
+        bot.reply_to(message, f'Text encoded in a QR code: {qr_text}')
+    else:
+        bot.reply_to(message, "QR code was not recognized or image not found.")
 
 
 if __name__ == "__main__":
